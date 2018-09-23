@@ -1,11 +1,10 @@
-﻿using Benchmark;
-using System.Linq;
+﻿using System.Linq;
 
-namespace Benchmark.Examples.Loops
+namespace Benchmark.Examples.BenchmarkCandidatesWithContexts
 {
-  public class LoopTestCase : ICandidateTestCase
+  public class LoopContext : IBenchmarkContext
   {
-    public LoopTestCase(ObservableObject[] items, int numberOfObjectCalls)
+    public LoopContext(ObservableObject[] items, int numberOfObjectCalls)
     {
       Items = items;
       NumberOfObjectCalls = numberOfObjectCalls;

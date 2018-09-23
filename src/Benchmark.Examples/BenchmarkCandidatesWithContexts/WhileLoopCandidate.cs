@@ -1,13 +1,12 @@
-﻿using Benchmark;
-using System.Linq;
+﻿using System.Linq;
 
-namespace Benchmark.Examples.Loops
+namespace Benchmark.Examples.BenchmarkCandidatesWithContexts
 {
-  public class WhileLoop : AbstractCandidate<LoopTestCase>
+  public class WhileLoopCandidate : IBenchmarkCandidate<LoopContext>
   {
-    public override string Name { get; } = "While-Loop";
+    public string Name { get; } = "While-Loop";
 
-    protected override void Test(LoopTestCase parameters)
+    public void Run(LoopContext parameters)
     {
       var count = parameters.Items.Count();
       var i = -1;

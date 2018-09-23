@@ -1,6 +1,6 @@
 ﻿namespace Benchmark
 {
-  public interface ICandidateTestCase
+  public interface IBenchmarkContext
   {
     string Description { get; }
   }

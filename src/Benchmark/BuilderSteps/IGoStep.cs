@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
-
-namespace Benchmark.BuilderSteps
+﻿namespace Benchmark.BuilderSteps
 {
-  public interface IGoStep<TTestCase>
-    where TTestCase : class, ICandidateTestCase
+  public interface IGoStep<TContext>
+    where TContext : class, IBenchmarkContext
   {
-    IEnumerable<BenchmarkResult> Go();
+    BenchmarkReport Go();
+  }
+
+  public interface IGoStep
+  {
+    BenchmarkReport Go();
   }
 }

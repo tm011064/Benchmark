@@ -1,8 +1,7 @@
 ﻿namespace Benchmark.BuilderSteps
 {
-  public interface IWithNumberOfRunsStep<TTestCase>
-    where TTestCase : class, ICandidateTestCase
+  public interface IWithNumberOfRunsStep
   {
-    IWithNumberOfDryRunsStep<TTestCase> WithNumberOfRuns(int numberOfRuns);
+    IWithNumberOfDryRunsStep WithNumberOfRuns(int numberOfRuns);
   }
 }
