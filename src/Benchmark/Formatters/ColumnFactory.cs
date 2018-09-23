@@ -160,7 +160,7 @@ namespace Benchmark.Formatters
 
       if (duration >= TimeSpan.FromMilliseconds(1))
       {
-        return timeSpan => timeSpan.TotalSeconds.ToString("0.0000 sec");
+        return timeSpan => timeSpan.TotalSeconds.ToString("0.000 sec");
       }
 
       return timeSpan => timeSpan.TotalMilliseconds.ToString("0.0000 ms");

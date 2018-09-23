@@ -115,14 +115,6 @@ namespace Benchmark
       return new CandidateRunnerArgs(wrapped.ToArray());
     }
 
-    public static IWithNumberOfRunsStep Candidates(params Action[] actions)
-    {
-      var wrapped = actions
-        .Select((action, index) => new BenchmarkCandidateActionWrapper(action, $"Candidate {index + 1}"));
-
-      return new CandidateRunnerArgs(wrapped.ToArray());
-    }
-
     public static IWithNumberOfRunsStep Candidates(params IBenchmarkCandidate[] candidates)
     {
       return new CandidateRunnerArgs(candidates);

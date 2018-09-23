@@ -22,7 +22,7 @@ namespace Benchmark
       return new DefaultReportFormatter().Format(Metrics, order);
     }
 
-    public string ToMarkupTable(RankColumn order = RankColumn.Median)
+    public string ToMarkuo(RankColumn order = RankColumn.Median)
     {
       return new MarkupReportFormatter().Format(Metrics, order);
     }
