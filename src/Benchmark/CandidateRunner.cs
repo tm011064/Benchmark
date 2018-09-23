@@ -1,54 +1,70 @@
 ﻿using Benchmark.BuilderSteps;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Benchmark
 {
-  internal class CandidateRunner<TTestCase>
-    where TTestCase : class, ICandidateTestCase
+  internal class CandidateRunner<TContext>
+    where TContext : class, IBenchmarkContext
   {
-    private readonly CandidateRunnerArgs<TTestCase> args;
+    private readonly CandidateRunnerWithContextArgs<TContext> args;
 
-    public CandidateRunner(CandidateRunnerArgs<TTestCase> args)
+    public CandidateRunner(CandidateRunnerWithContextArgs<TContext> args)
     {
       this.args = args;
     }
 
-    public IEnumerable<BenchmarkResult> Run()
+    public BenchmarkReport Run()
+    {
+      PerformDryRuns();
+
+      var metrics = args
+        .BenchmarkTestContexts
+        .Select(PerformBenchmarkTest);
+
+      return new BenchmarkReport(metrics.ToArray());
+    }
+
+    private void PerformDryRuns()
     {
       for (var i = 0; i < args.NumberOfDryRuns; i++)
       {
         foreach (var candidate in args.Candidates)
         {
-          candidate.Run(args.DryRunTestCase ?? args.TestCases.First());
+          candidate.Run(args.DryRunBenchmarkTestContext ?? args.BenchmarkTestContexts.First());
         }
       }
-
-      return args
-        .TestCases
-        .Select(BuildReports);
     }
 
-    private BenchmarkResult BuildReports(TTestCase testCase)
+    private BenchmarkContextMetrics PerformBenchmarkTest(TContext context)
     {
-      var reportResults = Enumerable.Range(0, args.NumberOfRuns)
-        .SelectMany(_ => args.Candidates.Select(x => x.Run(testCase)).ToArray())
-        .GroupBy(x => x.Name, x => x.Elapsed)
-        .Select(grouping => BuildResults(args.NumberOfRuns, grouping.Key, grouping.ToArray()));
+      var runResults = Enumerable.Range(0, args.NumberOfRuns)
+        .SelectMany(_ => args.Candidates.Select(candidate =>
+        {
+          var watch = Stopwatch.StartNew();
+          candidate.Run(context);
+          watch.Stop();
 
-      return new BenchmarkResult(testCase, reportResults.ToArray());
+          return new { Candidate = candidate, watch.Elapsed };
+        }).ToArray());
+
+      var metrics = runResults
+        .GroupBy(x => x.Candidate, x => x.Elapsed)
+        .Select(grouping => CreateMetrics(args.NumberOfRuns, grouping.Key.Name, grouping.ToArray()));
+
+      return new BenchmarkContextMetrics(context, metrics.ToArray());
     }
 
-    private CandidateMetrics BuildResults(
+    private BenchmarkMetrics CreateMetrics(
       int numberOfRuns,
-      string name,
+      string candidateName,
       TimeSpan[] durations)
     {
       var elapsedTicks = durations.Sum(x => x.Ticks);
 
-      return new CandidateMetrics(
-        name,
+      return new BenchmarkMetrics(
+        candidateName,
         TimeSpan.FromTicks(elapsedTicks),
         TimeSpan.FromTicks((long)Math.Round((decimal)elapsedTicks / numberOfRuns)),
         durations.OrderBy(x => x.Ticks).ElementAt(durations.Count() / 2));
