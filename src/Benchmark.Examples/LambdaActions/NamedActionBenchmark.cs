@@ -33,7 +33,7 @@ namespace Benchmark.Examples.LambdaActions
       return Measure
         .Candidates(
           ("Five Concatenations", Concatenate),
-          ("Firve String Builder Appends", StringBuilder))
+          ("Five String Builder Appends", StringBuilder))
         .WithNumberOfRuns(1000)
         .WithNumberOfDryRuns(10)
         .Go();
