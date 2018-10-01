@@ -143,12 +143,12 @@ namespace Benchmark.Tests
         }
       }
 
-      class when_converting_to_markup
+      class when_converting_to_markdown
       {
         class when_average
         {
           Because of = () =>
-            result = subject.ToMarkuo(RankColumn.Average);
+            result = subject.ToMarkdown(RankColumn.Average);
 
           It returned_expected_result = () =>
             result.ShouldEqual(@"
@@ -169,7 +169,7 @@ namespace Benchmark.Tests
         class when_median
         {
           Because of = () =>
-            result = subject.ToMarkuo(RankColumn.Median);
+            result = subject.ToMarkdown(RankColumn.Median);
 
           It returned_expected_result = () =>
             result.ShouldEqual(@"
@@ -190,7 +190,7 @@ namespace Benchmark.Tests
         class when_total
         {
           Because of = () =>
-            result = subject.ToMarkuo(RankColumn.Total);
+            result = subject.ToMarkdown(RankColumn.Total);
 
           It returned_expected_result = () =>
             result.ShouldEqual(@"
