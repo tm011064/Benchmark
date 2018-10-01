@@ -1,4 +1,4 @@
-## Benchmark
+# Benchmark
 Simple library that allows you to compare the performance of algorithms and output benchmark results as text, markdown or json. The following example shows how to benchmark two algorithms for concatenating strings:
 
 ``` c#
@@ -158,4 +158,4 @@ Good for posting your results on github:
 ```
 
 ## Dry Runs
-The `Measure` builder allows you to specify a number of dry runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, dry runs will remove any distortions caused by JIT compilation.
+The [Measure](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/Measure.cs) builder allows you to specify a number of dry runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, dry runs will remove any distortions caused by JIT compilation.
