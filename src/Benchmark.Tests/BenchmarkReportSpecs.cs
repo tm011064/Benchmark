@@ -1,7 +1,10 @@
 ﻿using Benchmark.Formatters;
 using Machine.Fakes;
 using Machine.Specifications;
+using Newtonsoft.Json;
 using System;
+using System.IO;
+using System.Linq;
 
 namespace Benchmark.Tests
 {
@@ -30,26 +33,26 @@ namespace Benchmark.Tests
       Establish context = () =>
         subject = new BenchmarkReport(new[]
         {
-          new BenchmarkContextMetrics(
+          new BenchmarkResult(
             first_context,
             new[]
             {
-              new BenchmarkMetrics("candidate one", TimeSpan.FromTicks(1), TimeSpan.FromMilliseconds(1), TimeSpan.FromSeconds(1)),
-              new BenchmarkMetrics("candidate two", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
+              new CandidateMetrics("candidate one", TimeSpan.FromTicks(1), TimeSpan.FromMilliseconds(1), TimeSpan.FromSeconds(1)),
+              new CandidateMetrics("candidate two", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
             }),
-          new BenchmarkContextMetrics(
+          new BenchmarkResult(
             second_context,
             new[]
             {
-              new BenchmarkMetrics("candidate one", TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(1)),
-              new BenchmarkMetrics("candidate two", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), TimeSpan.FromTicks(1))
+              new CandidateMetrics("candidate one", TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(1)),
+              new CandidateMetrics("candidate two", TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(10), TimeSpan.FromTicks(1))
             }),
-          new BenchmarkContextMetrics(
+          new BenchmarkResult(
             third_context,
             new[]
             {
-              new BenchmarkMetrics("candidate one", TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1)),
-              new BenchmarkMetrics("candidate two", TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2))
+              new CandidateMetrics("candidate one", TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1)),
+              new CandidateMetrics("candidate two", TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2))
             })
         });
 
@@ -206,65 +209,80 @@ namespace Benchmark.Tests
         }
       }
 
-      class when_converting_to_csv
+      class when_converting_to_json
       {
-        class when_average
-        {
-          Because of = () =>
-            result = subject.ToCsv(RankColumn.Average);
+        static JsonReport report;
 
-          It returned_expected_result = () =>
-            result.ShouldEqual(@"
-Context,Candidate,Rank,+/- Average,Total,Average,Median
-""first Context"",""candidate one"",""1"","""",""0.0001 ms"",""0.001 sec"",""1.000 sec""
-""first Context"", ""candidate two"", ""2"", ""+ 999900.00 %"", ""1000.0000 ms"", ""10.000 sec"", ""120.000 sec""
-""second Context"", ""candidate one"", ""1"", """", ""60.00 sec"", ""0.001 sec"", ""1.0000 ms""
-""second Context"", ""candidate two"", ""2"", ""+ 999900.00 %"", ""10.00 sec"", ""10.000 sec"", ""0.0001 ms""
-""third Context"", ""candidate two"", ""1"", """", ""00:02:00"", ""1.000 sec"", ""2.000 sec""
-""third Context"", ""candidate one"", ""2"", ""+ 100.00 %"", ""00:01:00"", ""2.000 sec"", ""1.000 sec""
-".TrimStart());
+        Because of = () =>
+        {
+          var json = subject.ToJson();
+
+          var serializer = new JsonSerializer();
+
+          using (var stringReader = new StringReader(json))
+          {
+            report = serializer.Deserialize<JsonReport>(new JsonTextReader(stringReader));
+          }
+        };
+
+        It returned_expected_result = () =>
+        {
+          report.Contexts.Count().ShouldEqual(3);
+
+          var firstContext = report.Contexts.Single(x => x.Name == "first Context");
+          firstContext.Candidates.Count().ShouldEqual(2);
+
+          AssertCandidate(firstContext, "candidate one", 0.0001m, 1m, 1000m);
+          AssertCandidate(firstContext, "candidate two", 1000m, 10000m, 120000m);
+
+          var secondContext = report.Contexts.Single(x => x.Name == "second Context");
+          secondContext.Candidates.Count().ShouldEqual(2);
+
+          AssertCandidate(secondContext, "candidate one", 60000m, 1m, 1m);
+          AssertCandidate(secondContext, "candidate two", 10000m, 10000m, .0001m);
+
+          var thirdContext = report.Contexts.Single(x => x.Name == "third Context");
+          thirdContext.Candidates.Count().ShouldEqual(2);
+
+          AssertCandidate(thirdContext, "candidate one", 60000m, 2000m, 1000m);
+          AssertCandidate(thirdContext, "candidate two", 120000m, 1000m, 2000m);
+        };
+        
+        static void AssertCandidate(
+          JsonReport.Context context,
+          string name,
+          decimal expectedTotalMilliseconds,
+          decimal expectedAverageMilliseconds,
+          decimal expectedMedianMilliseconds)
+        {
+          var candidate = context.Candidates.Single(x => x.Name == name);
+
+          candidate.TotalMilliseconds.ShouldEqual(expectedTotalMilliseconds);
+          candidate.AverageMilliseconds.ShouldEqual(expectedAverageMilliseconds);
+          candidate.MedianMilliseconds.ShouldEqual(expectedMedianMilliseconds);
         }
 
-        class when_median
+        public class JsonReport
         {
-          Because of = () =>
-            result = subject.ToCsv(RankColumn.Median);
+          public Context[] Contexts { get; set; }
 
-          It returned_expected_result = () =>
-            result.ShouldEqual(@"
-| Context | Candidate | Rank | +/- Median | Total | Average | Median |
-| --- | --- | --- | --- | --- | --- | --- |
-| first Context | candidate one | 1 |  | 0.0001 ms | 0.001 sec | 1.000 sec |
-|  | candidate two | 2 | + 11900.00 % | 1000.0000 ms | 10.000 sec | 120.000 sec |
-|   |   |   |   |   |   |   |
-| second Context | candidate two | 1 |  | 10.00 sec | 10.000 sec | 0.0001 ms |
-|  | candidate one | 2 | + 999900.00 % | 60.00 sec | 0.001 sec | 1.0000 ms |
-|   |   |   |   |   |   |   |
-| third Context | candidate one | 1 |  | 00:01:00 | 2.000 sec | 1.000 sec |
-|  | candidate two | 2 | + 100.00 % | 00:02:00 | 1.000 sec | 2.000 sec |
-|   |   |   |   |   |   |   |
-".TrimStart());
-        }
+          public class Context
+          {
+            public string Name { get; set; }
 
-        class when_total
-        {
-          Because of = () =>
-            result = subject.ToCsv(RankColumn.Total);
+            public Candidate[] Candidates { get; set; }
 
-          It returned_expected_result = () =>
-            result.ShouldEqual(@"
-| Context | Candidate | Rank | +/- Total | Total | Average | Median |
-| --- | --- | --- | --- | --- | --- | --- |
-| first Context | candidate one | 1 |  | 0.0001 ms | 0.001 sec | 1.000 sec |
-|  | candidate two | 2 | + 999999900.00 % | 1000.0000 ms | 10.000 sec | 120.000 sec |
-|   |   |   |   |   |   |   |
-| second Context | candidate two | 1 |  | 10.00 sec | 10.000 sec | 0.0001 ms |
-|  | candidate one | 2 | + 500.00 % | 60.00 sec | 0.001 sec | 1.0000 ms |
-|   |   |   |   |   |   |   |
-| third Context | candidate one | 1 |  | 00:01:00 | 2.000 sec | 1.000 sec |
-|  | candidate two | 2 | + 100.00 % | 00:02:00 | 1.000 sec | 2.000 sec |
-|   |   |   |   |   |   |   |
-".TrimStart());
+            public class Candidate
+            {
+              public string Name { get; set; }
+
+              public decimal TotalMilliseconds { get; set; }
+
+              public decimal AverageMilliseconds { get; set; }
+
+              public decimal MedianMilliseconds { get; set; }
+            }
+          }
         }
       }
     }

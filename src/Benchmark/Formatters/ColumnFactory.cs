@@ -7,62 +7,62 @@ namespace Benchmark.Formatters
   internal class ColumnFactory
   {
     public IEnumerable<Column> Create(
-      IEnumerable<BenchmarkContextMetrics> contextMetrics,
+      IEnumerable<BenchmarkResult> results,
       RankColumn rankColumn,
       bool allowNesting)
     {
-      var results = CreateOrderedMetrics(contextMetrics, rankColumn).ToArray();
+      var metricsByContext = CreateOrderedMetrics(results, rankColumn).ToArray();
 
       yield return new Column(
         "Context",
         allowNesting
-          ? BuildNestedBenchmarkTestContextRows(results).ToArray()
-          : BuildBenchmarkTestContextRows(results).ToArray(),
+          ? BuildNestedBenchmarkTestContextRows(metricsByContext).ToArray()
+          : BuildBenchmarkTestContextRows(metricsByContext).ToArray(),
         HorizontalAlignment.Left);
 
       yield return new Column(
         "Candidate",
-        BuildCandidateRows(results.Select(x => x.OrderedMetrics)).ToArray(),
+        BuildCandidateRows(metricsByContext.Select(x => x.OrderedMetrics)).ToArray(),
         HorizontalAlignment.Left);
 
       yield return new Column(
         "Rank",
-        BuildRankRows(results.Select(x => x.OrderedMetrics)).ToArray(),
+        BuildRankRows(metricsByContext.Select(x => x.OrderedMetrics)).ToArray(),
         HorizontalAlignment.Right);
 
       yield return new Column(
         CreatePlusMinusPercentageHeader(rankColumn),
-        BuildPlusMinusPercentageRows(results.Select(x => x.OrderedMetrics), rankColumn).ToArray(),
+        BuildPlusMinusPercentageRows(metricsByContext.Select(x => x.OrderedMetrics), rankColumn).ToArray(),
         HorizontalAlignment.Right);
 
       yield return new Column(
         "Total",
-        BuildElapsedColumn(results.Select(x => x.OrderedMetrics), RankColumn.Total).ToArray(),
+        BuildElapsedColumn(metricsByContext.Select(x => x.OrderedMetrics), RankColumn.Total).ToArray(),
         HorizontalAlignment.Right);
 
       yield return new Column(
         "Average",
-        BuildElapsedColumn(results.Select(x => x.OrderedMetrics), RankColumn.Average).ToArray(),
+        BuildElapsedColumn(metricsByContext.Select(x => x.OrderedMetrics), RankColumn.Average).ToArray(),
         HorizontalAlignment.Right);
 
       yield return new Column(
         "Median",
-        BuildElapsedColumn(results.Select(x => x.OrderedMetrics), RankColumn.Median).ToArray(),
+        BuildElapsedColumn(metricsByContext.Select(x => x.OrderedMetrics), RankColumn.Median).ToArray(),
         HorizontalAlignment.Right);
     }
 
-    private IEnumerable<(IBenchmarkContext Context, BenchmarkMetrics[] OrderedMetrics)> CreateOrderedMetrics(
-      IEnumerable<BenchmarkContextMetrics> contextMetrics,
+    private IEnumerable<(IBenchmarkContext Context, CandidateMetrics[] OrderedMetrics)> CreateOrderedMetrics(
+      IEnumerable<BenchmarkResult> results,
       RankColumn rankOrder)
     {
-      var sortKey = new Func<BenchmarkMetrics, object>(metrics => GetElapsed(metrics, rankOrder));
+      var sortKey = new Func<CandidateMetrics, object>(metrics => GetElapsed(metrics, rankOrder));
 
-      return contextMetrics
-        .Select(result => (result.Context, result.Metrics.OrderBy(sortKey).ToArray()));
+      return results
+        .Select(result => (result.Context, result.CandidateMetrics.OrderBy(sortKey).ToArray()));
     }
 
     private IEnumerable<string[]> BuildElapsedColumn(
-      IEnumerable<BenchmarkMetrics[]> orderedMetricGroups,
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups,
       RankColumn mode)
     {
       return orderedMetricGroups.Select(
@@ -79,7 +79,7 @@ namespace Benchmark.Formatters
     }
 
     private IEnumerable<string[]> BuildPlusMinusPercentageRows(
-      IEnumerable<BenchmarkMetrics[]> orderedMetricGroups,
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups,
       RankColumn rankColumn)
     {
       return orderedMetricGroups.Select(
@@ -108,7 +108,7 @@ namespace Benchmark.Formatters
     }
 
     private IEnumerable<string[]> BuildRankRows(
-      IEnumerable<BenchmarkMetrics[]> orderedMetricGroups)
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups)
     {
       return orderedMetricGroups
         .Select(orderedMetrics => Enumerable
@@ -118,7 +118,7 @@ namespace Benchmark.Formatters
     }
 
     private IEnumerable<string[]> BuildCandidateRows(
-      IEnumerable<BenchmarkMetrics[]> orderedMetricGroups)
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups)
     {
       return orderedMetricGroups
         .Select(orderedMetrics => orderedMetrics
@@ -127,7 +127,7 @@ namespace Benchmark.Formatters
     }
 
     private IEnumerable<string[]> BuildBenchmarkTestContextRows(
-      (IBenchmarkContext Context, BenchmarkMetrics[] OrderedMetrics)[] orderedMetricsByContext)
+      (IBenchmarkContext Context, CandidateMetrics[] OrderedMetrics)[] orderedMetricsByContext)
     {
       return orderedMetricsByContext
         .Select(x => Enumerable
@@ -137,7 +137,7 @@ namespace Benchmark.Formatters
     }
 
     private IEnumerable<string[]> BuildNestedBenchmarkTestContextRows(
-      (IBenchmarkContext Context, BenchmarkMetrics[] OrderedMetrics)[] orderedMetricsByContext)
+      (IBenchmarkContext Context, CandidateMetrics[] OrderedMetrics)[] orderedMetricsByContext)
     {
       return orderedMetricsByContext
         .Select(x => new[] { x.Context.Description }
@@ -184,7 +184,7 @@ namespace Benchmark.Formatters
       }
     }
 
-    private TimeSpan GetElapsed(BenchmarkMetrics metrics, RankColumn rankColumn)
+    private TimeSpan GetElapsed(CandidateMetrics metrics, RankColumn rankColumn)
     {
       switch (rankColumn)
       {

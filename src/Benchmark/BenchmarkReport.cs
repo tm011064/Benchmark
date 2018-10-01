@@ -5,12 +5,12 @@ namespace Benchmark
 {
   public class BenchmarkReport
   {
-    public BenchmarkReport(BenchmarkContextMetrics[] metrics)
+    public BenchmarkReport(BenchmarkResult[] results)
     {
-      Metrics = metrics;
+      Results = results;
     }
 
-    public IEnumerable<BenchmarkContextMetrics> Metrics { get; }
+    public IEnumerable<BenchmarkResult> Results { get; }
 
     public override string ToString()
     {
@@ -19,17 +19,17 @@ namespace Benchmark
 
     public string ToString(RankColumn order = RankColumn.Median)
     {
-      return new DefaultReportFormatter().Format(Metrics, order);
+      return new DefaultReportFormatter().Format(Results, order);
     }
 
     public string ToMarkuo(RankColumn order = RankColumn.Median)
     {
-      return new MarkupReportFormatter().Format(Metrics, order);
+      return new MarkupReportFormatter().Format(Results, order);
     }
 
-    public string ToCsv(RankColumn order = RankColumn.Median)
+    public string ToJson()
     {
-      return new CsvReportFormatter().Format(Metrics, order);
+      return new JsonFormatter().Format(Results);
     }
   }
 }
