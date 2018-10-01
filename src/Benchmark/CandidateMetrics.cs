@@ -2,9 +2,9 @@
 
 namespace Benchmark
 {
-  public class BenchmarkMetrics
+  public class CandidateMetrics
   {
-    public BenchmarkMetrics(
+    public CandidateMetrics(
       string candidateName,
       TimeSpan elapsed,
       TimeSpan averageElapsedTicks,

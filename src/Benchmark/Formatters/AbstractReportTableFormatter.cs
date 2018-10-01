@@ -19,13 +19,13 @@ namespace Benchmark.Formatters
     protected abstract string BuildLine(IEnumerable<string> columnValues);
 
     protected string DoFormat(
-      IEnumerable<BenchmarkContextMetrics> contextMetrics,
+      IEnumerable<BenchmarkResult> results,
       RankColumn rankColumn,
       bool allowNesting)
     {
       var columnFactory = new ColumnFactory();
 
-      var columns = columnFactory.Create(contextMetrics, rankColumn, allowNesting).ToArray();
+      var columns = columnFactory.Create(results, rankColumn, allowNesting).ToArray();
 
       var output = new StringBuilder();
 

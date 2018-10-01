@@ -37,10 +37,10 @@ namespace Benchmark.Formatters
     }
 
     public string Format(
-      IEnumerable<BenchmarkContextMetrics> contextMetrics,
+      IEnumerable<BenchmarkResult> results,
       RankColumn order)
     {
-      return DoFormat(contextMetrics, order, true);
+      return DoFormat(results, order, true);
     }
   }
 }

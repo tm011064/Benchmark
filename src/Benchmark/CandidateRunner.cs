@@ -37,7 +37,7 @@ namespace Benchmark
       }
     }
 
-    private BenchmarkContextMetrics PerformBenchmarkTest(TContext context)
+    private BenchmarkResult PerformBenchmarkTest(TContext context)
     {
       var runResults = Enumerable.Range(0, args.NumberOfRuns)
         .SelectMany(_ => args.Candidates.Select(candidate =>
@@ -53,17 +53,17 @@ namespace Benchmark
         .GroupBy(x => x.Candidate, x => x.Elapsed)
         .Select(grouping => CreateMetrics(args.NumberOfRuns, grouping.Key.Name, grouping.ToArray()));
 
-      return new BenchmarkContextMetrics(context, metrics.ToArray());
+      return new BenchmarkResult(context, metrics.ToArray());
     }
 
-    private BenchmarkMetrics CreateMetrics(
+    private CandidateMetrics CreateMetrics(
       int numberOfRuns,
       string candidateName,
       TimeSpan[] durations)
     {
       var elapsedTicks = durations.Sum(x => x.Ticks);
 
-      return new BenchmarkMetrics(
+      return new CandidateMetrics(
         candidateName,
         TimeSpan.FromTicks(elapsedTicks),
         TimeSpan.FromTicks((long)Math.Round((decimal)elapsedTicks / numberOfRuns)),
