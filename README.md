@@ -128,4 +128,3 @@ var report = Measure
   .WithNumberOfDryRuns(10)
   .Go();
 ```
-
