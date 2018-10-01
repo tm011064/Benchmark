@@ -5,7 +5,7 @@ namespace Benchmark.BuilderSteps
 {
   internal class CandidateRunnerArgs :
     IWithNumberOfRunsStep,
-    IWithNumberOfDryRunsStep
+    IWithNumberOfWarmUpRunsStep
   {
     public CandidateRunnerArgs(IBenchmarkCandidate[] candidates)
     {
@@ -16,17 +16,17 @@ namespace Benchmark.BuilderSteps
 
     public int NumberOfRuns { get; private set; }
 
-    public int NumberOfDryRuns { get; private set; }
+    public int NumberOfWarmUpRuns { get; private set; }
 
-    public IWithNumberOfDryRunsStep WithNumberOfRuns(int numberOfRuns)
+    public IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns)
     {
       NumberOfRuns = numberOfRuns;
       return this;
     }
 
-    public IGoStep WithNumberOfDryRuns(int numberOfRuns)
+    public IGoStep WithNumberOfWarmUpRuns(int numberOfRuns)
     {
-      NumberOfDryRuns = numberOfRuns;
+      NumberOfWarmUpRuns = numberOfRuns;
       return this;
     }
 
@@ -38,7 +38,7 @@ namespace Benchmark.BuilderSteps
         .Candidates(candidates.ToArray())
         .WithContexts(NullBenchmarkContext.Instance)
         .WithNumberOfRuns(NumberOfRuns)
-        .WithNumberOfDryRuns(NumberOfDryRuns)
+        .WithNumberOfWarmUpRuns(NumberOfWarmUpRuns)
         .Go();
     }
   }

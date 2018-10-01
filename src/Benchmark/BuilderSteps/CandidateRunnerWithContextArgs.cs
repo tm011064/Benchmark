@@ -6,7 +6,7 @@ namespace Benchmark.BuilderSteps
   internal class CandidateRunnerWithContextArgs<TContext> :
     IWithBenchmarkTestContextsStep<TContext>,
     IWithNumberOfRunsWithContextStep<TContext>,
-    IWithNumberOfDryRunsWithContextStep<TContext>
+    IWithNumberOfWarmUpRunsWithContextStep<TContext>
     where TContext : class, IBenchmarkContext
   {
     public CandidateRunnerWithContextArgs(IBenchmarkCandidate<TContext>[] candidates)
@@ -20,9 +20,9 @@ namespace Benchmark.BuilderSteps
 
     public int NumberOfRuns { get; private set; }
 
-    public int NumberOfDryRuns { get; private set; }
+    public int NumberOfWarmUpRuns { get; private set; }
 
-    public TContext DryRunBenchmarkTestContext { get; private set; }
+    public TContext WarmUpRunBenchmarkTestContext { get; private set; }
 
     public IWithNumberOfRunsWithContextStep<TContext> WithContexts(params TContext[] contexts)
     {
@@ -30,15 +30,15 @@ namespace Benchmark.BuilderSteps
       return this;
     }
 
-    public IWithNumberOfDryRunsWithContextStep<TContext> WithNumberOfRuns(int numberOfRuns)
+    public IWithNumberOfWarmUpRunsWithContextStep<TContext> WithNumberOfRuns(int numberOfRuns)
     {
       NumberOfRuns = numberOfRuns;
       return this;
     }
 
-    public IGoStep<TContext> WithNumberOfDryRuns(int numberOfRuns, TContext dryRunBenchmarkTestContext = null)
+    public IGoStep<TContext> WithNumberOfWarmUpRuns(int numberOfRuns, TContext WarmUpRunBenchmarkTestContext = null)
     {
-      NumberOfDryRuns = numberOfRuns;
+      NumberOfWarmUpRuns = numberOfRuns;
       return this;
     }
 

@@ -2,6 +2,6 @@
 {
   public interface IWithNumberOfRunsStep
   {
-    IWithNumberOfDryRunsStep WithNumberOfRuns(int numberOfRuns);
+    IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns);
   }
 }

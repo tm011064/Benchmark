@@ -7,7 +7,7 @@
       return Measure
         .Candidates<ConcatenateStringsCandidate, StringBuilderCandidate>()
         .WithNumberOfRuns(300)
-        .WithNumberOfDryRuns(10)
+        .WithNumberOfWarmUpRuns(10)
         .Go();
     }
   }

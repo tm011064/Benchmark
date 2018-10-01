@@ -35,7 +35,7 @@ namespace Benchmark.Examples.LambdaActions
           ("Five Concatenations", Concatenate),
           ("Five String Builder Appends", StringBuilder))
         .WithNumberOfRuns(1000)
-        .WithNumberOfDryRuns(10)
+        .WithNumberOfWarmUpRuns(10)
         .Go();
     }
   }

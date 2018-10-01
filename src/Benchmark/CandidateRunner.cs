@@ -17,7 +17,7 @@ namespace Benchmark
 
     public BenchmarkReport Run()
     {
-      PerformDryRuns();
+      PerformWarmUpRuns();
 
       var metrics = args
         .BenchmarkTestContexts
@@ -26,13 +26,13 @@ namespace Benchmark
       return new BenchmarkReport(metrics.ToArray());
     }
 
-    private void PerformDryRuns()
+    private void PerformWarmUpRuns()
     {
-      for (var i = 0; i < args.NumberOfDryRuns; i++)
+      for (var i = 0; i < args.NumberOfWarmUpRuns; i++)
       {
         foreach (var candidate in args.Candidates)
         {
-          candidate.Run(args.DryRunBenchmarkTestContext ?? args.BenchmarkTestContexts.First());
+          candidate.Run(args.WarmUpRunBenchmarkTestContext ?? args.BenchmarkTestContexts.First());
         }
       }
     }
