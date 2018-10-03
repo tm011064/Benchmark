@@ -31,7 +31,7 @@ var report = Measure
     ("Five Concatenations", Concatenate),
     ("Five String Builder Appends", StringBuilder))
   .RunFor(TimeSpan.FromSeconds(3))
-  .WithNumberOfDryRuns(10)
+  .WithNumberOfWarmUpRuns(10)
   .Go();
 
 Console.Write(report);
@@ -71,7 +71,7 @@ var report = Measure<LoopContext>
     new LoopContext(items, 1),
     new LoopContext(items, 10))
   .RunFor(TimeSpan.FromSeconds(5))
-  .WithNumberOfDryRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
+  .WithNumberOfWarmUpRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
   .Go();  
 ```
 
@@ -83,7 +83,7 @@ This is similar to lambda actions but written in a more formalized way (see LINK
 var report = Measure
   .Candidates<ConcatenateStringsCandidate, StringBuilderCandidate>()
   .WithNumberOfRuns(300)
-  .WithNumberOfDryRuns(10)
+  .WithNumberOfWarmUpRuns(10)
   .Go();
 ```
 
