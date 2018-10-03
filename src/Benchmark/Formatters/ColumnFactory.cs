@@ -49,6 +49,19 @@ namespace Benchmark.Formatters
         "Median",
         BuildElapsedColumn(metricsByContext.Select(x => x.OrderedMetrics), RankColumn.Median).ToArray(),
         HorizontalAlignment.Right);
+
+      yield return new Column(
+        "Runs",
+        BuildNumberOfRunsRows(metricsByContext.Select(x => x.OrderedMetrics)).ToArray(),
+        HorizontalAlignment.Right);
+
+      if (results.Any(result => result.CandidateMetrics.Any(x => x.HasComment())))
+      {
+        yield return new Column(
+          "Comment",
+          BuildCommentRows(metricsByContext.Select(x => x.OrderedMetrics)).ToArray(),
+          HorizontalAlignment.Left);
+      }
     }
 
     private IEnumerable<(IBenchmarkContext Context, CandidateMetrics[] OrderedMetrics)> CreateOrderedMetrics(
@@ -123,6 +136,24 @@ namespace Benchmark.Formatters
       return orderedMetricGroups
         .Select(orderedMetrics => orderedMetrics
           .Select(metrics => metrics.CandidateName)
+          .ToArray());
+    }
+
+    private IEnumerable<string[]> BuildCommentRows(
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups)
+    {
+      return orderedMetricGroups
+        .Select(orderedMetrics => orderedMetrics
+          .Select(metrics => metrics.Comment ?? string.Empty)
+          .ToArray());
+    }
+
+    private IEnumerable<string[]> BuildNumberOfRunsRows(
+      IEnumerable<CandidateMetrics[]> orderedMetricGroups)
+    {
+      return orderedMetricGroups
+        .Select(orderedMetrics => orderedMetrics
+          .Select(metrics => metrics.NumberOfRuns.ToString())
           .ToArray());
     }
 

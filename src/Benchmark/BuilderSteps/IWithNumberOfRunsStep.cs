@@ -1,7 +1,11 @@
-﻿namespace Benchmark.BuilderSteps
+﻿using System;
+
+namespace Benchmark.BuilderSteps
 {
-  public interface IWithNumberOfRunsStep
+  public interface IWithNumberOfRunsStep : IWithNumberOfWarmUpRunsStep
   {
     IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns);
+
+    IWithNumberOfWarmUpRunsStep WithTestDurationPerContext(TimeSpan duration);
   }
 }

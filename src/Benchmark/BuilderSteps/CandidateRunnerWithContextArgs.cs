@@ -5,8 +5,7 @@ namespace Benchmark.BuilderSteps
 {
   internal class CandidateRunnerWithContextArgs<TContext> :
     IWithBenchmarkTestContextsStep<TContext>,
-    IWithNumberOfRunsWithContextStep<TContext>,
-    IWithNumberOfWarmUpRunsWithContextStep<TContext>
+    IWithNumberOfRunsWithContextStep<TContext>
     where TContext : class, IBenchmarkContext
   {
     public CandidateRunnerWithContextArgs(IBenchmarkCandidate<TContext>[] candidates)
@@ -18,11 +17,18 @@ namespace Benchmark.BuilderSteps
 
     public TContext[] BenchmarkTestContexts { get; private set; }
 
-    public int NumberOfRuns { get; private set; }
+    public int? NumberOfRuns { get; private set; }
+
+    public TimeSpan DurationPerContext { get; private set; } = TimeSpan.FromSeconds(1);
 
     public int NumberOfWarmUpRuns { get; private set; }
 
     public TContext WarmUpRunBenchmarkTestContext { get; private set; }
+
+    public bool HasNumberOfRuns()
+    {
+      return NumberOfRuns.HasValue;
+    }
 
     public IWithNumberOfRunsWithContextStep<TContext> WithContexts(params TContext[] contexts)
     {
@@ -33,6 +39,12 @@ namespace Benchmark.BuilderSteps
     public IWithNumberOfWarmUpRunsWithContextStep<TContext> WithNumberOfRuns(int numberOfRuns)
     {
       NumberOfRuns = numberOfRuns;
+      return this;
+    }
+
+    public IWithNumberOfWarmUpRunsWithContextStep<TContext> WithTestDurationPerContext(TimeSpan duration)
+    {
+      DurationPerContext = duration;
       return this;
     }
 
@@ -54,7 +66,7 @@ namespace Benchmark.BuilderSteps
         throw new ArgumentException($"At least one {nameof(TContext)} must be provided");
       }
 
-      if (NumberOfRuns < 0)
+      if (NumberOfRuns < 1)
       {
         throw new ArgumentException($"{nameof(NumberOfRuns)} must be greater than zero");
       }

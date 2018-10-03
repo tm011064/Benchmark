@@ -3,9 +3,7 @@ using System.Linq;
 
 namespace Benchmark.BuilderSteps
 {
-  internal class CandidateRunnerArgs :
-    IWithNumberOfRunsStep,
-    IWithNumberOfWarmUpRunsStep
+  internal class CandidateRunnerArgs : IWithNumberOfRunsStep
   {
     public CandidateRunnerArgs(IBenchmarkCandidate[] candidates)
     {
@@ -14,13 +12,21 @@ namespace Benchmark.BuilderSteps
 
     public IBenchmarkCandidate[] Candidates { get; }
 
-    public int NumberOfRuns { get; private set; }
+    public int? NumberOfRuns { get; private set; }
+
+    public TimeSpan DurationPerContext { get; private set; } = TimeSpan.FromSeconds(1);
 
     public int NumberOfWarmUpRuns { get; private set; }
 
     public IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns)
     {
       NumberOfRuns = numberOfRuns;
+      return this;
+    }
+
+    public IWithNumberOfWarmUpRunsStep WithTestDurationPerContext(TimeSpan duration)
+    {
+      DurationPerContext = duration;
       return this;
     }
 
@@ -34,11 +40,20 @@ namespace Benchmark.BuilderSteps
     {
       var candidates = Candidates.Select(x => new BenchmarkCandidateNullContextWrapper(x));
 
-      return Measure<NullBenchmarkContext>
+      var builder = Measure<NullBenchmarkContext>
         .Candidates(candidates.ToArray())
-        .WithContexts(NullBenchmarkContext.Instance)
-        .WithNumberOfRuns(NumberOfRuns)
-        .WithNumberOfWarmUpRuns(NumberOfWarmUpRuns)
+        .WithContexts(NullBenchmarkContext.Instance);
+
+      if (NumberOfRuns.HasValue)
+      {
+        return builder
+          .WithNumberOfRuns(NumberOfRuns.Value)
+          .WithNumberOfWarmUpRuns(NumberOfWarmUpRuns)
+          .Go();
+      }
+
+      return builder
+        .WithTestDurationPerContext(DurationPerContext)
         .Go();
     }
   }
