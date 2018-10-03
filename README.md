@@ -94,18 +94,18 @@ var report = Measure
 Good for console output or Visual Studio debugging:
 
 ``` text
-| Context           | Candidate   | Rank | +/- Median | Total     | Average   | Median    | Runs | Comment        |
-| ----------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
-| 100 x 10 objects  | MessagePack |    1 |            | 0.593 sec | 0.003 sec | 0.002 sec |  201 | Size: 1.44 KB  |
-|                   | Avro        |    2 |  + 23.69 % | 0.711 sec | 0.004 sec | 0.003 sec |  201 | Size: 1.14 KB  |
-|                   | Protobuf    |    3 |  + 70.85 % | 0.978 sec | 0.005 sec | 0.004 sec |  201 | Size: 1.51 KB  |
-|                   | Json        |    4 | + 400.95 % | 2.728 sec | 0.014 sec | 0.012 sec |  201 | Size: 3.04 KB  |
-| ----------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
-| 100 x 100 objects | MessagePack |    1 |            | 0.643 sec | 0.029 sec | 0.027 sec |   22 | Size: 14.36 KB |
-|                   | Avro        |    2 |  + 46.98 % | 0.883 sec | 0.040 sec | 0.039 sec |   22 | Size: 11.42 KB |
-|                   | Protobuf    |    3 |  + 68.40 % | 1.033 sec | 0.047 sec | 0.045 sec |   22 | Size: 15.06 KB |
-|                   | Json        |    4 | + 321.70 % | 2.537 sec | 0.115 sec | 0.112 sec |   22 | Size: 30.28 KB |
-| ----------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
+| Context       | Candidate   | Rank | +/- Median | Total     | Average   | Median    | Runs | Comment        |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
+| 100 x 10 obj  | MessagePack |    1 |            | 0.608 sec | 0.003 sec | 0.002 sec |  228 | Size: 1.44 KB  |
+|               | Avro        |    2 |  + 23.16 % | 0.738 sec | 0.003 sec | 0.003 sec |  228 | Size: 1.14 KB  |
+|               | Protobuf    |    3 |  + 66.13 % | 0.969 sec | 0.004 sec | 0.004 sec |  228 | Size: 1.51 KB  |
+|               | Json        |    4 | + 382.12 % | 2.691 sec | 0.012 sec | 0.011 sec |  228 | Size: 3.04 KB  |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
+| 100 x 100 obj | MessagePack |    1 |            | 0.606 sec | 0.023 sec | 0.024 sec |   26 | Size: 14.36 KB |
+|               | Avro        |    2 |  + 17.71 % | 0.754 sec | 0.029 sec | 0.028 sec |   26 | Size: 11.42 KB |
+|               | Protobuf    |    3 |  + 44.71 % | 0.978 sec | 0.038 sec | 0.035 sec |   26 | Size: 15.06 KB |
+|               | Json        |    4 | + 350.81 % | 2.789 sec | 0.107 sec | 0.108 sec |   26 | Size: 30.28 KB |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
 ```
 
 ### ToMarkdown(), ToMarkdown(RankColumn column)
@@ -114,21 +114,98 @@ Good for posting your results on github:
 
 | Context | Candidate | Rank | +/- Median | Total | Average | Median | Runs | Comment |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 100 x 10 objects | MessagePack | 1 |  | 0.593 sec | 0.003 sec | 0.002 sec | 201 | Size: 1.44 KB |
-|  | Avro | 2 | + 23.69 % | 0.711 sec | 0.004 sec | 0.003 sec | 201 | Size: 1.14 KB |
-|  | Protobuf | 3 | + 70.85 % | 0.978 sec | 0.005 sec | 0.004 sec | 201 | Size: 1.51 KB |
-|  | Json | 4 | + 400.95 % | 2.728 sec | 0.014 sec | 0.012 sec | 201 | Size: 3.04 KB |
+| 100 x 10 obj | MessagePack | 1 |  | 0.608 sec | 0.003 sec | 0.002 sec | 228 | Size: 1.44 KB |
+|  | Avro | 2 | + 23.16 % | 0.738 sec | 0.003 sec | 0.003 sec | 228 | Size: 1.14 KB |
+|  | Protobuf | 3 | + 66.13 % | 0.969 sec | 0.004 sec | 0.004 sec | 228 | Size: 1.51 KB |
+|  | Json | 4 | + 382.12 % | 2.691 sec | 0.012 sec | 0.011 sec | 228 | Size: 3.04 KB |
 |   |   |   |   |   |   |   |   |   |
-| 100 x 100 objects | MessagePack | 1 |  | 0.643 sec | 0.029 sec | 0.027 sec | 22 | Size: 14.36 KB |
-|  | Avro | 2 | + 46.98 % | 0.883 sec | 0.040 sec | 0.039 sec | 22 | Size: 11.42 KB |
-|  | Protobuf | 3 | + 68.40 % | 1.033 sec | 0.047 sec | 0.045 sec | 22 | Size: 15.06 KB |
-|  | Json | 4 | + 321.70 % | 2.537 sec | 0.115 sec | 0.112 sec | 22 | Size: 30.28 KB |
+| 100 x 100 obj | MessagePack | 1 |  | 0.606 sec | 0.023 sec | 0.024 sec | 26 | Size: 14.36 KB |
+|  | Avro | 2 | + 17.71 % | 0.754 sec | 0.029 sec | 0.028 sec | 26 | Size: 11.42 KB |
+|  | Protobuf | 3 | + 44.71 % | 0.978 sec | 0.038 sec | 0.035 sec | 26 | Size: 15.06 KB |
+|  | Json | 4 | + 350.81 % | 2.789 sec | 0.107 sec | 0.108 sec | 26 | Size: 30.28 KB |
 |   |   |   |   |   |   |   |   |   |
 
 #### ToJson()
 
 ``` json
-{ "contexts": [{ "name": "100 x 10 objects", "candidates": [{ "name": "Json", "totalMilliseconds": "2727.7543", "averageMilliseconds": "13.5709", "medianMilliseconds": "12.3856" "comment": "Size: 3.04 KB" "numberOfRuns": "201" }, { "name": "Avro", "totalMilliseconds": "710.5347", "averageMilliseconds": "3.535", "medianMilliseconds": "3.058" "comment": "Size: 1.14 KB" "numberOfRuns": "201" }, { "name": "Protobuf", "totalMilliseconds": "977.5612", "averageMilliseconds": "4.8635", "medianMilliseconds": "4.224" "comment": "Size: 1.51 KB" "numberOfRuns": "201" }, { "name": "MessagePack", "totalMilliseconds": "592.6003", "averageMilliseconds": "2.9483", "medianMilliseconds": "2.4724" "comment": "Size: 1.44 KB" "numberOfRuns": "201" }] }, { "name": "100 x 100 objects", "candidates": [{ "name": "Json", "totalMilliseconds": "2537.3437", "averageMilliseconds": "115.3338", "medianMilliseconds": "111.8661" "comment": "Size: 30.28 KB" "numberOfRuns": "22" }, { "name": "Avro", "totalMilliseconds": "882.6966", "averageMilliseconds": "40.1226", "medianMilliseconds": "38.9896" "comment": "Size: 11.42 KB" "numberOfRuns": "22" }, { "name": "Protobuf", "totalMilliseconds": "1032.6908", "averageMilliseconds": "46.9405", "medianMilliseconds": "44.6737" "comment": "Size: 15.06 KB" "numberOfRuns": "22" }, { "name": "MessagePack", "totalMilliseconds": "643.2519", "averageMilliseconds": "29.2387", "medianMilliseconds": "26.5277" "comment": "Size: 14.36 KB" "numberOfRuns": "22" }] }] }
+{
+   "contexts":[
+      {
+         "name":"100 x 10 obj",
+         "candidates":[
+            {
+               "name":"Json",
+               "totalMilliseconds":"2662.1292",
+               "averageMilliseconds":"12.7987",
+               "medianMilliseconds":"11.9535",
+               "comment":"Size: 3.04 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"Avro",
+               "totalMilliseconds":"727.7984",
+               "averageMilliseconds":"3.499",
+               "medianMilliseconds":"3.0409",
+               "comment":"Size: 1.14 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"Protobuf",
+               "totalMilliseconds":"992.9312",
+               "averageMilliseconds":"4.7737",
+               "medianMilliseconds":"4.2041",
+               "comment":"Size: 1.51 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"MessagePack",
+               "totalMilliseconds":"622.3978",
+               "averageMilliseconds":"2.9923",
+               "medianMilliseconds":"2.5411",
+               "comment":"Size: 1.44 KB",
+               "numberOfRuns":"208"
+            }
+         ]
+      },
+      {
+         "name":"100 x 100 obj",
+         "candidates":[
+            {
+               "name":"Json",
+               "totalMilliseconds":"2661.792",
+               "averageMilliseconds":"106.4717",
+               "medianMilliseconds":"104.273",
+               "comment":"Size: 30.28 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"Avro",
+               "totalMilliseconds":"793.6837",
+               "averageMilliseconds":"31.7473",
+               "medianMilliseconds":"29.7418",
+               "comment":"Size: 11.42 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"Protobuf",
+               "totalMilliseconds":"968.7413",
+               "averageMilliseconds":"38.7497",
+               "medianMilliseconds":"36.2534",
+               "comment":"Size: 15.06 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"MessagePack",
+               "totalMilliseconds":"657.2098",
+               "averageMilliseconds":"26.2884",
+               "medianMilliseconds":"24.9105",
+               "comment":"Size: 14.36 KB",
+               "numberOfRuns":"25"
+            }
+         ]
+      }
+   ]
+}
 ```
 
 #### IBenchmarkComment
