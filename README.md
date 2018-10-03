@@ -30,7 +30,7 @@ var report = Measure
   .Candidates(
     ("Five Concatenations", Concatenate),
     ("Five String Builder Appends", StringBuilder))
-  .WithNumberOfRuns(1000)
+  .RunFor(TimeSpan.FromSeconds(3))
   .WithNumberOfDryRuns(10)
   .Go();
 
@@ -70,7 +70,7 @@ var report = Measure<LoopContext>
     new LoopContext(items, 0),
     new LoopContext(items, 1),
     new LoopContext(items, 10))
-  .WithNumberOfRuns(100)
+  .RunFor(TimeSpan.FromSeconds(5))
   .WithNumberOfDryRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
   .Go();  
 ```
@@ -157,5 +157,9 @@ Good for posting your results on github:
 }
 ```
 
-## Dry Runs
-The [Measure](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/Measure.cs) builder allows you to specify a number of dry runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, dry runs will remove any distortions caused by JIT compilation.
+#### IBenchmarkComment
+
+If your [IBenchmarkCandidate](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/IBenchmarkCandidate.cs) also implements the [IBenchmarkComment](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/IBenchmarkComment.cs) interface you can render a comment for each candidate per context. You can use this method to output additional information gathered during tests.
+
+## Warm Up Runs
+The [Measure](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/Measure.cs) builder allows you to specify a number of warm up runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, warm up runs will remove any distortions caused by JIT compilation.
