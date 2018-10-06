@@ -13,21 +13,45 @@ namespace Benchmark.BuilderSteps
       Candidates = candidates ?? throw new ArgumentNullException(nameof(candidates));
     }
 
+    public CandidateRunnerWithContextArgs(
+      IBenchmarkCandidate<TContext>[] candidates,
+      TContext[] benchmarkTestContexts,
+      int? numberOfRuns,
+      TimeSpan? durationPerContext,
+      TimeSpan? durationPerCandidate,
+      int? numberOfWarmUpRuns,
+      TContext warmUpRunBenchmarkTestContext)
+    {
+      BenchmarkTestContexts = benchmarkTestContexts;
+      NumberOfRuns = numberOfRuns;
+      DurationPerContext = durationPerContext;
+      DurationPerCandidate = durationPerCandidate;
+      NumberOfWarmUpRuns = numberOfWarmUpRuns;
+      WarmUpRunBenchmarkTestContext = warmUpRunBenchmarkTestContext;
+    }
+
     public IBenchmarkCandidate<TContext>[] Candidates { get; }
 
     public TContext[] BenchmarkTestContexts { get; private set; }
 
     public int? NumberOfRuns { get; private set; }
 
-    public TimeSpan DurationPerContext { get; private set; } = TimeSpan.FromSeconds(1);
+    public TimeSpan? DurationPerContext { get; private set; }
 
-    public int NumberOfWarmUpRuns { get; private set; }
+    public TimeSpan? DurationPerCandidate { get; private set; }
+
+    public int? NumberOfWarmUpRuns { get; private set; }
 
     public TContext WarmUpRunBenchmarkTestContext { get; private set; }
 
     public bool HasNumberOfRuns()
     {
       return NumberOfRuns.HasValue;
+    }
+
+    public bool HasNumberOfWarmupRuns()
+    {
+      return NumberOfWarmUpRuns.HasValue;
     }
 
     public IWithNumberOfRunsWithContextStep<TContext> WithContexts(params TContext[] contexts)
@@ -42,9 +66,15 @@ namespace Benchmark.BuilderSteps
       return this;
     }
 
-    public IWithNumberOfWarmUpRunsWithContextStep<TContext> WithTestDurationPerContext(TimeSpan duration)
+    public IWithNumberOfWarmUpRunsWithContextStep<TContext> RunEachContextFor(TimeSpan duration)
     {
       DurationPerContext = duration;
+      return this;
+    }
+
+    public IWithNumberOfWarmUpRunsWithContextStep<TContext> RunEachContextCandidateFor(TimeSpan duration)
+    {
+      DurationPerCandidate = duration;
       return this;
     }
 

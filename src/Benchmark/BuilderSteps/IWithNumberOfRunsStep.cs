@@ -6,6 +6,8 @@ namespace Benchmark.BuilderSteps
   {
     IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns);
 
-    IWithNumberOfWarmUpRunsStep WithTestDurationPerContext(TimeSpan duration);
+    IWithNumberOfWarmUpRunsStep RunEachContextFor(TimeSpan duration);
+
+    IWithNumberOfWarmUpRunsStep RunEachCandidateFor(TimeSpan duration);
   }
 }

@@ -14,7 +14,12 @@ namespace Benchmark.BenchmarkStrategies
         return new FixedNumberOfRunsBenchmarkStrategy<TContext>(context, args);
       }
 
-      return new FixedDurationBenchmarkStrategy<TContext>(context, args);
+      if (args.DurationPerCandidate.HasValue)
+      {
+        return new FixedDurationPerCandidateBenchmarkStrategy<TContext>(context, args);
+      }
+
+      return new FixedDurationPerContextBenchmarkStrategy<TContext>(context, args);
     }
   }
 }

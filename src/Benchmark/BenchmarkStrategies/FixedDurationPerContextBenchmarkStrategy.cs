@@ -6,14 +6,14 @@ using System.Linq;
 
 namespace Benchmark.BenchmarkStrategies
 {
-  internal class FixedDurationBenchmarkStrategy<TContext> : IBenchmarkStrategy<TContext>
+  internal class FixedDurationPerContextBenchmarkStrategy<TContext> : IBenchmarkStrategy<TContext>
     where TContext : class, IBenchmarkContext
   {
     private readonly TContext context;
 
     private readonly CandidateRunnerWithContextArgs<TContext> args;
 
-    public FixedDurationBenchmarkStrategy(TContext context, CandidateRunnerWithContextArgs<TContext> args)
+    public FixedDurationPerContextBenchmarkStrategy(TContext context, CandidateRunnerWithContextArgs<TContext> args)
     {
       this.context = context;
       this.args = args;
@@ -32,22 +32,20 @@ namespace Benchmark.BenchmarkStrategies
 
     private IEnumerable<(IBenchmarkCandidate<TContext> Candidate, TimeSpan Elapsed)> PerformRuns()
     {
-      var outstandingDuration = args.DurationPerContext;
+      var outstandingDuration = args.DurationPerContext ?? TimeSpan.FromSeconds(1);
 
       while (outstandingDuration > TimeSpan.Zero)
       {
-        var runWatch = Stopwatch.StartNew();
-
         foreach (var candidate in args.Candidates)
         {
           var watch = Stopwatch.StartNew();
           candidate.Run(context);
           watch.Stop();
 
+          outstandingDuration -= watch.Elapsed;
+
           yield return (candidate, watch.Elapsed);
         }
-
-        outstandingDuration -= runWatch.Elapsed;
       }
     }
   }

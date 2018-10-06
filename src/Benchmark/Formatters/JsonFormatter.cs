@@ -26,7 +26,9 @@ namespace Benchmark.Formatters
         $@" ""name"": ""{metrics.CandidateName}""," +
         $@" ""totalMilliseconds"": ""{metrics.TotalElapsed.TotalMilliseconds}""," +
         $@" ""averageMilliseconds"": ""{metrics.AverageElapsed.TotalMilliseconds}""," +
-        $@" ""medianMilliseconds"": ""{metrics.MedianElapsed.TotalMilliseconds}""" +
+        $@" ""medianMilliseconds"": ""{metrics.MedianElapsed.TotalMilliseconds}""," +
+        $@" ""comment"": ""{metrics.Comment}""," +
+        $@" ""numberOfRuns"": ""{metrics.NumberOfRuns}""" +
         " }";
     }
   }

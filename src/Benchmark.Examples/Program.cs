@@ -12,7 +12,7 @@ namespace Benchmark.Examples
       var ts = TimeSpan.FromSeconds(5);
       var rr = ts - TimeSpan.FromSeconds(100);
 
-      var report = NamedActionBenchmark.Run();
+      var report = NamedActionBenchmarkWithFixedTimespan.Run();
 
       Console.Write(report.ToString());
 
