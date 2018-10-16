@@ -30,8 +30,8 @@ var report = Measure
   .Candidates(
     ("Five Concatenations", Concatenate),
     ("Five String Builder Appends", StringBuilder))
-  .WithNumberOfRuns(1000)
-  .WithNumberOfDryRuns(10)
+  .RunFor(TimeSpan.FromSeconds(3))
+  .WithNumberOfWarmUpRuns(10)
   .Go();
 
 Console.Write(report);
@@ -70,8 +70,8 @@ var report = Measure<LoopContext>
     new LoopContext(items, 0),
     new LoopContext(items, 1),
     new LoopContext(items, 10))
-  .WithNumberOfRuns(100)
-  .WithNumberOfDryRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
+  .RunFor(TimeSpan.FromSeconds(5))
+  .WithNumberOfWarmUpRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
   .Go();  
 ```
 
@@ -83,7 +83,7 @@ This is similar to lambda actions but written in a more formalized way (see LINK
 var report = Measure
   .Candidates<ConcatenateStringsCandidate, StringBuilderCandidate>()
   .WithNumberOfRuns(300)
-  .WithNumberOfDryRuns(10)
+  .WithNumberOfWarmUpRuns(10)
   .Go();
 ```
 
@@ -94,68 +94,123 @@ var report = Measure
 Good for console output or Visual Studio debugging:
 
 ``` text
-| Context        | Candidate     | Rank | +/- Median    | Total        | Average    | Median      |
-| -------------- | ------------- | ---- | ------------- | ------------ | ---------- | ----------- |
-| first Context  | candidate one |    1 |               |    0.0001 ms |  0.001 sec |   1.000 sec |
-|                | candidate two |    2 |  + 11900.00 % | 1000.0000 ms | 10.000 sec | 120.000 sec |
-| -------------- | ------------- | ---- | ------------- | ------------ | ---------- | ----------- |
-| second Context | candidate two |    1 |               |    10.00 sec | 10.000 sec |   0.0001 ms |
-|                | candidate one |    2 | + 999900.00 % |    60.00 sec |  0.001 sec |   1.0000 ms |
-| -------------- | ------------- | ---- | ------------- | ------------ | ---------- | ----------- |
-| third Context  | candidate one |    1 |               |     00:01:00 |  2.000 sec |   1.000 sec |
-|                | candidate two |    2 |    + 100.00 % |     00:02:00 |  1.000 sec |   2.000 sec |
-| -------------- | ------------- | ---- | ------------- | ------------ | ---------- | ----------- |
+| Context       | Candidate   | Rank | +/- Median | Total     | Average   | Median    | Runs | Comment        |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
+| 100 x 10 obj  | MessagePack |    1 |            | 0.608 sec | 0.003 sec | 0.002 sec |  228 | Size: 1.44 KB  |
+|               | Avro        |    2 |  + 23.16 % | 0.738 sec | 0.003 sec | 0.003 sec |  228 | Size: 1.14 KB  |
+|               | Protobuf    |    3 |  + 66.13 % | 0.969 sec | 0.004 sec | 0.004 sec |  228 | Size: 1.51 KB  |
+|               | Json        |    4 | + 382.12 % | 2.691 sec | 0.012 sec | 0.011 sec |  228 | Size: 3.04 KB  |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
+| 100 x 100 obj | MessagePack |    1 |            | 0.606 sec | 0.023 sec | 0.024 sec |   26 | Size: 14.36 KB |
+|               | Avro        |    2 |  + 17.71 % | 0.754 sec | 0.029 sec | 0.028 sec |   26 | Size: 11.42 KB |
+|               | Protobuf    |    3 |  + 44.71 % | 0.978 sec | 0.038 sec | 0.035 sec |   26 | Size: 15.06 KB |
+|               | Json        |    4 | + 350.81 % | 2.789 sec | 0.107 sec | 0.108 sec |   26 | Size: 30.28 KB |
+| ------------- | ----------- | ---- | ---------- | --------- | --------- | --------- | ---- | -------------- |
 ```
 
 ### ToMarkdown(), ToMarkdown(RankColumn column)
 
 Good for posting your results on github:
 
-| Context | Candidate | Rank | +/- Average | Total | Average | Median |
-| --- | --- | --- | --- | --- | --- | --- |
-| first Context | candidate one | 1 |  | 0.0001 ms | 0.001 sec | 1.000 sec |
-|  | candidate two | 2 | + 999900.00 % | 1000.0000 ms | 10.000 sec | 120.000 sec |
-|   |   |   |   |   |   |   |
-| second Context | candidate one | 1 |  | 60.00 sec | 0.001 sec | 1.0000 ms |
-|  | candidate two | 2 | + 999900.00 % | 10.00 sec | 10.000 sec | 0.0001 ms |
-|   |   |   |   |   |   |   |
-| third Context | candidate two | 1 |  | 00:02:00 | 1.000 sec | 2.000 sec |
-|  | candidate one | 2 | + 100.00 % | 00:01:00 | 2.000 sec | 1.000 sec |
-|   |   |   |   |   |   |   |
+| Context | Candidate | Rank | +/- Median | Total | Average | Median | Runs | Comment |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 100 x 10 obj | MessagePack | 1 |  | 0.608 sec | 0.003 sec | 0.002 sec | 228 | Size: 1.44 KB |
+|  | Avro | 2 | + 23.16 % | 0.738 sec | 0.003 sec | 0.003 sec | 228 | Size: 1.14 KB |
+|  | Protobuf | 3 | + 66.13 % | 0.969 sec | 0.004 sec | 0.004 sec | 228 | Size: 1.51 KB |
+|  | Json | 4 | + 382.12 % | 2.691 sec | 0.012 sec | 0.011 sec | 228 | Size: 3.04 KB |
+|   |   |   |   |   |   |   |   |   |
+| 100 x 100 obj | MessagePack | 1 |  | 0.606 sec | 0.023 sec | 0.024 sec | 26 | Size: 14.36 KB |
+|  | Avro | 2 | + 17.71 % | 0.754 sec | 0.029 sec | 0.028 sec | 26 | Size: 11.42 KB |
+|  | Protobuf | 3 | + 44.71 % | 0.978 sec | 0.038 sec | 0.035 sec | 26 | Size: 15.06 KB |
+|  | Json | 4 | + 350.81 % | 2.789 sec | 0.107 sec | 0.108 sec | 26 | Size: 30.28 KB |
+|   |   |   |   |   |   |   |   |   |
 
 #### ToJson()
 
 ``` json
 {
-  "contexts": [{
-    "name": "first Context",
-    "candidates": [{
-      "name": "candidate one",
-      "totalMilliseconds": "0.0001",
-      "averageMilliseconds": "1",
-      "medianMilliseconds": "1000"
-    }, {
-      "name": "candidate two",
-      "totalMilliseconds": "1000",
-      "averageMilliseconds": "10000",
-      "medianMilliseconds": "120000"
-    }]
-  }, {
-    "name": "second Context",
-    "candidates": [{
-      "name": "candidate one",
-      "totalMilliseconds": "60000",
-      "averageMilliseconds": "1",
-      "medianMilliseconds": "1"
-    }, {
-      "name": "candidate two",
-      "totalMilliseconds": "10000",
-      "averageMilliseconds": "10000",
-      "medianMilliseconds": "0.0001"
-    }]
-  }]
+   "contexts":[
+      {
+         "name":"100 x 10 obj",
+         "candidates":[
+            {
+               "name":"Json",
+               "totalMilliseconds":"2662.1292",
+               "averageMilliseconds":"12.7987",
+               "medianMilliseconds":"11.9535",
+               "comment":"Size: 3.04 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"Avro",
+               "totalMilliseconds":"727.7984",
+               "averageMilliseconds":"3.499",
+               "medianMilliseconds":"3.0409",
+               "comment":"Size: 1.14 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"Protobuf",
+               "totalMilliseconds":"992.9312",
+               "averageMilliseconds":"4.7737",
+               "medianMilliseconds":"4.2041",
+               "comment":"Size: 1.51 KB",
+               "numberOfRuns":"208"
+            },
+            {
+               "name":"MessagePack",
+               "totalMilliseconds":"622.3978",
+               "averageMilliseconds":"2.9923",
+               "medianMilliseconds":"2.5411",
+               "comment":"Size: 1.44 KB",
+               "numberOfRuns":"208"
+            }
+         ]
+      },
+      {
+         "name":"100 x 100 obj",
+         "candidates":[
+            {
+               "name":"Json",
+               "totalMilliseconds":"2661.792",
+               "averageMilliseconds":"106.4717",
+               "medianMilliseconds":"104.273",
+               "comment":"Size: 30.28 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"Avro",
+               "totalMilliseconds":"793.6837",
+               "averageMilliseconds":"31.7473",
+               "medianMilliseconds":"29.7418",
+               "comment":"Size: 11.42 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"Protobuf",
+               "totalMilliseconds":"968.7413",
+               "averageMilliseconds":"38.7497",
+               "medianMilliseconds":"36.2534",
+               "comment":"Size: 15.06 KB",
+               "numberOfRuns":"25"
+            },
+            {
+               "name":"MessagePack",
+               "totalMilliseconds":"657.2098",
+               "averageMilliseconds":"26.2884",
+               "medianMilliseconds":"24.9105",
+               "comment":"Size: 14.36 KB",
+               "numberOfRuns":"25"
+            }
+         ]
+      }
+   ]
 }
 ```
 
-## Dry Runs
-The [Measure](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/Measure.cs) builder allows you to specify a number of dry runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, dry runs will remove any distortions caused by JIT compilation.
+#### IBenchmarkComment
+
+If your [IBenchmarkCandidate](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/IBenchmarkCandidate.cs) also implements the [IBenchmarkComment](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/IBenchmarkComment.cs) interface you can render a comment for each candidate per context. You can use this method to output additional information gathered during tests.
+
+## Warm Up Runs
+The [Measure](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark/Measure.cs) builder allows you to specify a number of warm up runs for your algorithm to counter JIT compilation influencing your results. If you have a good number of runs and are only interested in the median runtime, you won't need this feature. If overall/average execution time of the runs is important, warm up runs will remove any distortions caused by JIT compilation.
