@@ -29,7 +29,7 @@ namespace Benchmark
 
     private void PerformWarmUpRuns()
     {
-      var warmupContext = args.WarmUpRunBenchmarkTestContext ?? args.BenchmarkTestContexts.First();
+      var warmupContext = args.WarmUpContext ?? args.BenchmarkTestContexts.First();
       var numberOfRuns = args.NumberOfWarmUpRuns ?? 1;
 
       for (var i = 0; i < numberOfRuns; i++)

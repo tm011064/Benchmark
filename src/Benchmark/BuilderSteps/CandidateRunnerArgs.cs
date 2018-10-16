@@ -12,17 +12,17 @@ namespace Benchmark.BuilderSteps
 
     public IBenchmarkCandidate[] Candidates { get; }
 
-    public int? NumberOfRuns { get; private set; }
+    public int? FixedNumberOfRuns { get; private set; }
+
+    public int? FixedNumberOfWarmUpRuns { get; private set; }
 
     public TimeSpan? DurationPerContext { get; private set; }
 
     public TimeSpan? DurationPerCandidate { get; private set; }
 
-    public int? NumberOfWarmUpRuns { get; private set; }
-
-    public IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns)
+    public IWithNumberOfWarmUpRunsStep NumberOfRuns(int numberOfRuns)
     {
-      NumberOfRuns = numberOfRuns;
+      FixedNumberOfRuns = numberOfRuns;
       return this;
     }
 
@@ -32,15 +32,15 @@ namespace Benchmark.BuilderSteps
       return this;
     }
 
-    public IWithNumberOfWarmUpRunsStep RunEachCandidateFor(TimeSpan duration)
+    public IWithNumberOfWarmUpRunsStep RunEachContextCandidateFor(TimeSpan duration)
     {
       DurationPerCandidate = duration;
       return this;
     }
 
-    public IGoStep WithNumberOfWarmUpRuns(int numberOfRuns)
+    public IGoStep NumberOfWarmUpRuns(int numberOfRuns)
     {
-      NumberOfWarmUpRuns = numberOfRuns;
+      FixedNumberOfWarmUpRuns = numberOfRuns;
       return this;
     }
 
@@ -49,10 +49,10 @@ namespace Benchmark.BuilderSteps
       var args = new CandidateRunnerWithContextArgs<NullBenchmarkContext>(
         Candidates.Select(x => new BenchmarkCandidateNullContextWrapper(x)).ToArray(),
         new[] { NullBenchmarkContext.Instance },
-        NumberOfRuns,
+        FixedNumberOfRuns,
         DurationPerContext,
         DurationPerCandidate,
-        NumberOfWarmUpRuns,
+        FixedNumberOfWarmUpRuns,
         null);
 
       return args.Go();

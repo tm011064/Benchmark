@@ -23,35 +23,35 @@ namespace Benchmark.BuilderSteps
       TContext warmUpRunBenchmarkTestContext)
     {
       BenchmarkTestContexts = benchmarkTestContexts;
-      NumberOfRuns = numberOfRuns;
+      FixedNumberOfRuns = numberOfRuns;
       DurationPerContext = durationPerContext;
       DurationPerCandidate = durationPerCandidate;
-      NumberOfWarmUpRuns = numberOfWarmUpRuns;
-      WarmUpRunBenchmarkTestContext = warmUpRunBenchmarkTestContext;
+      FixedNumberOfWarmUpRuns = numberOfWarmUpRuns;
+      WarmUpContext = warmUpRunBenchmarkTestContext;
     }
 
     public IBenchmarkCandidate<TContext>[] Candidates { get; }
 
     public TContext[] BenchmarkTestContexts { get; private set; }
 
-    public int? NumberOfRuns { get; private set; }
+    public int? FixedNumberOfRuns { get; private set; }
+
+    public int? FixedNumberOfWarmUpRuns { get; private set; }
 
     public TimeSpan? DurationPerContext { get; private set; }
 
     public TimeSpan? DurationPerCandidate { get; private set; }
 
-    public int? NumberOfWarmUpRuns { get; private set; }
-
-    public TContext WarmUpRunBenchmarkTestContext { get; private set; }
+    public TContext WarmUpContext { get; private set; }
 
     public bool HasNumberOfRuns()
     {
-      return NumberOfRuns.HasValue;
+      return FixedNumberOfRuns.HasValue;
     }
 
     public bool HasNumberOfWarmupRuns()
     {
-      return NumberOfWarmUpRuns.HasValue;
+      return FixedNumberOfWarmUpRuns.HasValue;
     }
 
     public IWithNumberOfRunsWithContextStep<TContext> WithContexts(params TContext[] contexts)
@@ -60,9 +60,9 @@ namespace Benchmark.BuilderSteps
       return this;
     }
 
-    public IWithNumberOfWarmUpRunsWithContextStep<TContext> WithNumberOfRuns(int numberOfRuns)
+    public IWithNumberOfWarmUpRunsWithContextStep<TContext> NumberOfRuns(int numberOfRuns)
     {
-      NumberOfRuns = numberOfRuns;
+      FixedNumberOfRuns = numberOfRuns;
       return this;
     }
 
@@ -78,9 +78,10 @@ namespace Benchmark.BuilderSteps
       return this;
     }
 
-    public IGoStep<TContext> WithNumberOfWarmUpRuns(int numberOfRuns, TContext WarmUpRunBenchmarkTestContext = null)
+    public IGoStep<TContext> NumberOfWarmUpRuns(int numberOfRuns, TContext warmUpContext = null)
     {
-      NumberOfWarmUpRuns = numberOfRuns;
+      FixedNumberOfWarmUpRuns = numberOfRuns;
+      WarmUpContext = warmUpContext;
       return this;
     }
 
@@ -96,7 +97,7 @@ namespace Benchmark.BuilderSteps
         throw new ArgumentException($"At least one {nameof(TContext)} must be provided");
       }
 
-      if (NumberOfRuns < 1)
+      if (FixedNumberOfRuns < 1)
       {
         throw new ArgumentException($"{nameof(NumberOfRuns)} must be greater than zero");
       }

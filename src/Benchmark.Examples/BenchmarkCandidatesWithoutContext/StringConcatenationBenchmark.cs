@@ -6,8 +6,8 @@
     {
       return Measure
         .Candidates<ConcatenateStringsCandidate, StringBuilderCandidate>()
-        .WithNumberOfRuns(300)
-        .WithNumberOfWarmUpRuns(10)
+        .NumberOfRuns(300)
+        .NumberOfWarmUpRuns(10)
         .Go();
     }
   }

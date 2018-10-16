@@ -16,8 +16,8 @@ namespace Benchmark.Examples.BenchmarkCandidatesWithContexts
           new LoopContext(items.ToArray(), 0),
           new LoopContext(items.ToArray(), 1),
           new LoopContext(items.ToArray(), 10))
-        .WithNumberOfRuns(100)
-        .WithNumberOfWarmUpRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
+        .NumberOfRuns(100)
+        .NumberOfWarmUpRuns(10, new LoopContext(items.Take(1).ToArray(), 1))
         .Go();
     }
   }

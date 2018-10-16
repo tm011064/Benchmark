@@ -4,10 +4,10 @@ namespace Benchmark.BuilderSteps
 {
   public interface IWithNumberOfRunsStep : IWithNumberOfWarmUpRunsStep
   {
-    IWithNumberOfWarmUpRunsStep WithNumberOfRuns(int numberOfRuns);
+    IWithNumberOfWarmUpRunsStep NumberOfRuns(int numberOfRuns);
 
     IWithNumberOfWarmUpRunsStep RunEachContextFor(TimeSpan duration);
 
-    IWithNumberOfWarmUpRunsStep RunEachCandidateFor(TimeSpan duration);
+    IWithNumberOfWarmUpRunsStep RunEachContextCandidateFor(TimeSpan duration);
   }
 }

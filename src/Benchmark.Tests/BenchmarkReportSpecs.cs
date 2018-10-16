@@ -15,6 +15,8 @@ namespace Benchmark.Tests
 
     static string result;
 
+    static readonly IBenchmarkCandidate<IBenchmarkContext> candidate = An<IBenchmarkCandidate<IBenchmarkContext>>();
+
     static readonly IBenchmarkContext first_context = An<IBenchmarkContext>();
 
     static readonly IBenchmarkContext second_context = An<IBenchmarkContext>();
@@ -37,6 +39,8 @@ namespace Benchmark.Tests
             first_context,
             new[]
             {
+              CandidateMetrics.Create(candidate, first_context, 10, new[] { TimeSpan.FromMilliseconds(100) }  )
+
               new CandidateMetrics("candidate one", TimeSpan.FromTicks(1), TimeSpan.FromMilliseconds(1), TimeSpan.FromSeconds(1)),
               new CandidateMetrics("candidate two", TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2))
             }),
@@ -247,7 +251,7 @@ namespace Benchmark.Tests
           AssertCandidate(thirdContext, "candidate one", 60000m, 2000m, 1000m);
           AssertCandidate(thirdContext, "candidate two", 120000m, 1000m, 2000m);
         };
-        
+
         static void AssertCandidate(
           JsonReport.Context context,
           string name,
@@ -284,6 +288,11 @@ namespace Benchmark.Tests
             }
           }
         }
+      }
+
+      class MockBenchmarkContext : IBenchmarkContext
+      {
+        public string Description => string.Empty;
       }
     }
   }
