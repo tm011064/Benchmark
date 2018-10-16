@@ -19,7 +19,7 @@ namespace Benchmark.BenchmarkStrategies
 
     public BenchmarkResult Execute()
     {
-      var numberOfRuns = args.NumberOfRuns.Value;
+      var numberOfRuns = args.FixedNumberOfRuns.Value;
 
       var runResults = Enumerable.Range(0, numberOfRuns)
         .SelectMany(_ => args.Candidates.Select(candidate =>

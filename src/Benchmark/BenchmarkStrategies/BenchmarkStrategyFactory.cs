@@ -9,7 +9,7 @@ namespace Benchmark.BenchmarkStrategies
       TContext context,
       CandidateRunnerWithContextArgs<TContext> args)
     {
-      if (args.NumberOfRuns.HasValue)
+      if (args.FixedNumberOfRuns.HasValue)
       {
         return new FixedNumberOfRunsBenchmarkStrategy<TContext>(context, args);
       }
