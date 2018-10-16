@@ -72,7 +72,7 @@ var report = Measure<LoopContext>
 
 #### Benchmark Candidates Without Context
 
-This is similar to lambda actions but written in a more formalized way (see LINK for complete example):
+This is similar to lambda actions but written in a more formalized way [example](https://github.com/tm011064/Benchmark/blob/master/src/Benchmark.Examples/BenchmarkCandidatesWithoutContext/StringConcatenationBenchmark.cs):
 
 ``` c#
 var report = Measure
